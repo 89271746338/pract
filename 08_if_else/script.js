@@ -1,7 +1,5 @@
 let minValue = parseInt(prompt('Минимальное знание числа для игры','0'));
 let maxValue = parseInt(prompt('Максимальное знание числа для игры','100'));
-let minNew = parseInt(prompt('Введите минимум', 0));
-let maxNew = parseInt(prompt('Введите максимум', 100));
 alert(`Загадайте любое целое число от ${minValue} до ${maxValue}, а я его угадаю`);
 let answerNumber = Math.floor((minValue + maxValue) / 2);
 let orderNumber = 1;
@@ -47,62 +45,74 @@ function getRandomQuestion(number) {
     return `${start} ${number}?`;
 }
 
-
-orderNumberField.innerText = orderNumber;
-answerField.innerText = getRandomQuestion(answerNumber);
-
-
-document.getElementById('btnRetry').addEventListener('click', function () {
-    minNew = minNew || 0;
-    maxNew = maxNew || 100;
-
-    minNew = minNew < -999 ? -999 : (minNew > 999 ? 999 : minNew);
-    maxNew = maxNew < -999 ? -999 : (maxNew > 999 ? 999 : maxNew);
-    
-    if (minNew >= maxNew) {
-        minValue = 0;
-        maxValue = 100;
-    } else {
-        minValue = minNew;
-        maxValue = maxNew;
+function startGame() {
+    const minInput = prompt('Введите минимальное число для игры','0');
+    const maxInput = prompt('Введите максимальное число для игры','100');
+    let min = parseInt(minInput);
+    let max = parseInt(maxInput);
+    if (isNaN(min)) min = 0;
+    if (isNaN(max)) max = 100;
+    if (min >=max) {
+        alert('Минимум должен быть меньше максимума! Будет использовано 0 и 100');
+        min = 0;
+        max = 100;
     }
-
+    min = min < -999 ? -999 : (min > 999 ? 999 : min);
+    max = max < -999 ? -999 : (max > 999 ? 999: max);
+    minValue = min;
+    maxValue = max;
     orderNumber = 0;
-    orderNumberField.innerText = orderNumber;
-    answerNumber = Math.floor((minValue + maxValue) / 2);
     gameRun = true;
+    answerNumber = Math.floor((minValue + maxValue)/2);
+    orderNumber++;
+    orderNumberField.innerText = orderNumber;
     answerField.innerText = getRandomQuestion(answerNumber);
+    alert(`Загадайте любое целое число от ${minValue} до ${maxValue},а я его угадаю`);
+}
+startGame();
+document.getElementById('btnRetry').addEventListener('click', function(){
+    startGame();
 });
 
 
 document.getElementById('btnOver').addEventListener('click', function () {
     if (gameRun) {
-        if (minValue === maxValue) {
+        if (maxValue === minValue) {
             answerField.innerText = getRandomPhrase(errorPhrases);
             gameRun = false;
-        } else {
-            minValue = answerNumber + 1;
-            answerNumber = Math.floor((minValue + maxValue) / 2);
-            orderNumber++;
-            orderNumberField.innerText = orderNumber;
-            answerField.innerText = getRandomQuestion(answerNumber);
+            return;
+        } 
+        minValue = answerNumber + 1;
+        if (minValue > maxValue) {
+            answerField.innerText = getRandomPhrase(errorPhrases);
+            gameRun = false;
+            return;
         }
+        answerNumber = Math.floor((minValue + maxValue)/2);
+        orderNumber++;
+        orderNumberField.innerText = orderNumber;
+        answerField.innerText = getRandomQuestion(answerNumber);
     }
 });
 
 
 document.getElementById('btnLess').addEventListener('click', function () {
     if (gameRun) {
-        if (minValue === maxValue) {
+        if (maxValue === minValue) {
             answerField.innerText = getRandomPhrase(errorPhrases);
             gameRun = false;
-        } else {
-            maxValue = answerNumber - 1;
-            answerNumber = Math.floor((minValue + maxValue) / 2);
-            orderNumber++;
-            orderNumberField.innerText = orderNumber;
-            answerField.innerText = getRandomQuestion(answerNumber);
+            return;
+        } 
+        maxValue = answerNumber -1;
+        if (maxValue < minValue) {
+            answerField.innerText = getRandomPhrase(errorPhrases);
+            gameRun = false;
+            return;
         }
+        answerNumber = Math.floor((minValue + maxValue)/2);
+        orderNumber++;
+        orderNumberField.innerText = orderNumber;
+        answerField.innerText = getRandomQuestion(answerNumber);   
     }
 });
 
@@ -114,11 +124,4 @@ document.getElementById('btnEqual').addEventListener('click', function () {
     }
 });
 
-
-document.getElementById('btnEqual').addEventListener('click', function () {
-    if (gameRun){
-        answerField.innerText = `Я всегда угадываю\n\u{1F60E}`
-        gameRun = false;
-    }
-})
 
